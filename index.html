@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poluser Pro Career | Universal International Engine</title>
+    <style>
+        :root { --team-color: #00ff88; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0c0f12;
+            color: #ffffff;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 460px;
+            background: #161b22;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            border: 1px solid #30363d;
+            box-sizing: border-box;
+        }
+        h2, h3 { color: var(--team-color); text-align: center; margin-top: 0; transition: color 0.3s; }
+        .screen { display: none; }
+        .active { display: block; }
+        
+        .hud {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 12px;
+            border: 1px solid #21262d;
+        }
+        .hud-item { font-weight: bold; color: #8b949e; }
+        .hud-item span { color: #fff; }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #0d1117;
+            padding: 6px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #21262d;
+            gap: 2px;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-weight: bold;
+            font-size: 9px;
+            cursor: pointer;
+            padding: 6px 2px;
+            border-radius: 6px;
+            flex: 1;
+            text-align: center;
+        }
+        .nav-btn.active-tab { background: var(--team-color); color: #000; transition: background 0.3s; }
+
+        label { display: block; margin: 8px 0 4px; font-size: 13px; color: #c9d1d9; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #fff;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--team-color);
+            color: #000;
+            border: none;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:disabled {
+            background: #30363d !important;
+            color: #8b949e !important;
+            cursor: not-allowed;
+        }
+
+        .pitch-canvas {
+            background: #1e4620;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            height: 140px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .pitch-line {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 2px; background: rgba(255,255,255,0.3);
+        }
+        .dot {
+            position: absolute; width: 8px; height: 8px;
+            border-radius: 50%; transform: translate(-50%, -50%);
+        }
+        .ball-dot {
+            position: absolute; width: 6px; height: 6px;
+            background: #fff; border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s linear;
+        }
+
+        .match-report-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .attribute-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .list-card {
+            background: #21262d;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 1px solid #30363d;
+            font-size: 12px;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { padding: 5px; text-align: left; border-bottom: 1px solid #30363d; }
+        .highlight-row { background: rgba(0, 255, 136, 0.15); font-weight: bold; }
+        
+        .news-item {
+            background: #0d1117;
+            border-left: 3px solid var(--team-color);
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="screen-setup" class="screen active">
+        <h2>⚽ Create Pro Player</h2>
+        <label>First & Last Name</label>
+        <input type="text" id="setup-name" value="Poluser Seven">
+
+        <label>Player Position</label>
+        <select id="setup-pos">
+            <option value="ST">ST (Striker)</option>
+            <option value="CF">CF (Center Forward)</option>
+            <option value="LW">LW (Left Winger)</option>
+            <option value="RW">RW (Right Winger)</option>
+            <option value="CAM">CAM (Attacking Mid)</option>
+            <option value="CM">CM (Central Mid)</option>
+            <option value="CDM">CDM (Defensive Mid)</option>
+            <option value="LM">LM (Left Mid)</option>
+            <option value="RM">RM (Right Mid)</option>
+            <option value="CB">CB (Center Back)</option>
+            <option value="LB">LB (Left Back)</option>
+            <option value="RB">RB (Right Back)</option>
+            <option value="GK">GK (Goalkeeper)</option>
+        </select>
+
+        <label>Select Nationality</label>
+        <select id="setup-nation"></select>
+
+        <label>Select League</label>
+        <select id="setup-league" onchange="populateClubs()">
+            <option value="Premier League">English Premier League</option>
+            <option value="La Liga">Spanish La Liga</option>
+            <option value="Ligue 1">French Ligue 1</option>
+            <option value="MLS">American MLS</option>
+            <option value="Serie A Brasil">Brazilian Serie A</option>
+        </select>
+
+        <label>Select Club Team</label>
+        <select id="setup-club"></select>
+
+        <button class="btn" onclick="startGame()">Kick Off Career</button>
+    </div>
+
+    <div id="game-hub" style="display:none;">
+        <div class="hud">
+            <div class="hud-item">Player: <span id="hud-name">-</span></div>
+            <div class="hud-item">Calendar: <span id="hud-date">-</span></div>
+            <div class="hud-item">Club: <span id="hud-club">-</span></div>
+            <div class="hud-item">Nation: <span id="hud-nation">-</span></div>
+            <div class="hud-item">OVR: <span id="hud-ovr" style="color:#00ff88">65</span></div>
+            <div class="hud-item">Skill Pool: <span id="hud-sp" style="color:#00ff88">0 SP</span></div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-btn active-tab" id="tab-match" onclick="showTab('match')">MATCH</button>
+            <button class="nav-btn" id="tab-standings" onclick="showTab('standings')">LEAGUE</button>
+            <button class="nav-btn" id="tab-rosters" onclick="showTab('rosters')">ROSTERS</button>
+            <button class="nav-btn" id="tab-skills" onclick="showTab('skills')">PRO TREE</button>
+            <button class="nav-btn" id="tab-news" onclick="showTab('news')">NEWS feed</button>
+        </div>
+
+        <div id="view-match" class="tab-view">
+            <h3 id="match-type-title">Matchday Loading...</h3>
+            <div class="scoreboard">
+                <span id="sb-home">HOME</span>
+                <span id="sb-score" style="color:#00ff88; font-size:16px;">0 - 0</span>
+                <span id="sb-away">AWAY</span>
+                <span id="sb-timer">00'</span>
+            </div>
+            
+            <div class="pitch-canvas" id="pitch">
+                <div class="pitch-line"></div>
+                <div class="ball-dot" id="v-ball" style="left:50%; top:50%;"></div>
+            </div>
+            
+            <div id="match-ticker" style="font-style: italic; min-height: 25px; text-align: center; color: #8b949e; font-size: 11px;">Stamina ready.</div>
+            
+            <div class="match-report-card" id="match-report">
+                <h4 style="margin: 0 0 5px 0; color:#00ff88;">📊 Match Rating Performance</h4>
+                <div>Your Match Rating: <span id="rep-rating" style="font-weight:bold; color:#fff;">-</span></div>
+                <div>Skill Points Gained: <span id="rep-sp" style="font-weight:bold; color:#00ff88;">-</span></div>
+            </div>
+
+            <button class="btn" id="play-match-btn" onclick="runMatchEngine()">Sim Matchday</button>
+        </div>
+
+        <div id="view-standings" class="tab-view" style="display:none;">
+            <h3 id="table-title">Standings</h3>
+            <div style="overflow-y: auto; max-height: 280px;">
+                <table>
+                    <thead>
+                        <tr><th>Pos</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr>
+                    </thead>
+                    <tbody id="standings-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-rosters" class="tab-view" style="display:none;">
+            <h3>Rosters & Live Player Stats</h3>
+            <select id="roster-select-team" onchange="renderRosterView()"></select>
+            <div style="overflow-y: auto; max-height: 240px;">
+                <table>
+                    <thead>
+                        <tr><th>Name</th><th>Pos</th><th>OVR</th><th>APP</th><th>G</th><th>A</th></tr>
+                    </thead>
+                    <tbody id="roster-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-skills" class="tab-view" style="display:none;">
+            <h3>FC 26 Pro Upgrade Attribute Tree</h3>
+            <div class="attribute-grid" id="skills-grid"></div>
+        </div>
+
+        <div id="view-news" class="tab-view" style="display:none;">
+            <h3>Global Transfer & Match Feed</h3>
+            <div id="news-container" style="overflow-y: auto; max-height: 280px; padding: 4px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const nationalDatabase = [
+        {name:"Argentina", rat:89}, {name:"France", rat:89}, {name:"Spain", rat:88}, {name:"England", rat:88}, {name:"Brazil", rat:87},
+        {name:"Portugal", rat:86}, {name:"Netherlands", rat:86}, {name:"Belgium", rat:85}, {name:"Italy", rat:85}, {name:"Germany", rat:86},
+        {name:"Croatia", rat:84}, {name:"Morocco", rat:83}, {name:"Colombia", rat:83}, {name:"Uruguay", rat:84}, {name:"Mexico", rat:80},
+        {name:"USA", rat:80}, {name:"Japan", rat:81}, {name:"Senegal", rat:79}, {name:"Switzerland", rat:80}, {name:"Iran", rat:75},
+        {name:"Denmark", rat:80}, {name:"South Korea", rat:78}, {name:"Australia", rat:75}, {name:"Ukraine", rat:79}, {name:"Austria", rat:79},
+        {name:"Turkey", rat:80}, {name:"Ecuador", rat:78}, {name:"Peru", rat:76}, {name:"Poland", rat:77}, {name:"Sweden", rat:79},
+        {name:"Wales", rat:75}, {name:"Algeria", rat:77}, {name:"Chile", rat:76}, {name:"Nigeria", rat:78}, {name:"Egypt", rat:78},
+        {name:"Canada", rat:77}, {name:"Norway", rat:79}, {name:"Tunisia", rat:74}, {name:"Czechia", rat:77}, {name:"Scotland", rat:76},
+        {name:"Costa Rica", rat:73}, {name:"Romania", rat:75}, {name:"Slovakia", rat:75}, {name:"Venezuela", rat:75}, {name:"Greece", rat:76},
+        {name:"Ivory Coast", rat:78}, {name:"Jamaica", rat:74}, {name:"Cameroon", rat:76}, {name:"Ireland", rat:74}, {name:"South Africa", rat:74},
+        {name:"Mali", rat:75}, {name:"Honduras", rat:71}, {name:"Uzbekistan", rat:73}, {name:"Saudi Arabia", rat:73}, {name:"Finland", rat:73},
+        {name:"Georgia", rat:76}, {name:"Albania", rat:74}, {name:"Guatemala", rat:69}, {name:"Bolivia", rat:71}, {name:"New Zealand", rat:70},
+        {name:"China", rat:69}, {name:"Curaçao", rat:70}, {name:"Iceland", rat:73}, {name:"Northern Ireland", rat:72}, {name:"Gambia", rat:71},
+        {name:"Benin", rat:70}, {name:"Angola", rat:73}, {name:"Oman", rat:70}, {name:"Trinidad", rat:68}, {name:"Zambia", rat:71},
+        {name:"Syria", rat:68}, {name:"Uganda", rat:68}, {name:"Cape Verde", rat:73}, {name:"Jordan", rat:72}, {name:"Bahrain", rat:70},
+        {name:"Gabon", rat:72}, {name:"Luxembourg", rat:69}, {name:"Madagascar", rat:68}, {name:"Estonia", rat:66}, {name:"Cyprus", rat:67},
+        {name:"India", rat:65}, {name:"Tanzania", rat:67}, {name:"Sudan", rat:66}, {name:"Malta", rat:63}, {name:"Latvia", rat:65},
+        {name:"Lithuania", rat:65}, {name:"Kazakhstan", rat:69}, {name:"Moldova", rat:65}, {name:"New Caledonia", rat:61}, {name:"Fiji", rat:60},
+        {name:"Vanuatu", rat:60}, {name:"Tahiti", rat:61}, {name:"Solomon Islands", rat:62}, {name:"Papua New Guinea", rat:60}, {name:"Samoa", rat:58},
+        {name:"American Samoa", rat:55}, {name:"Tonga", rat:56}, {name:"Cook Islands", rat:56}, {name:"Maldives", rat:61}, {name:"Bhutan", rat:58},
+        {name:"Laos", rat:59}, {name:"Cambodia", rat:59}, {name:"Macau", rat:58}, {name:"Mongolia", rat:57}, {name:"Brunei", rat:57},
+        {name:"Guam", rat:56}, {name:"Sri Lanka", rat:56}, {name:"San Marino", rat:54}, {name:"Andorra", rat:62}, {name:"Liechtenstein", rat:61},
+        {name:"Gibraltar", rat:60}, {name:"Faroe Islands", rat:64}, {name:"Kosovo", rat:72}, {name:"Montserrat", rat:63}, {name:"Bermuda", rat:64},
+        {name:"Aruba", rat:61}, {name:"Cuba", rat:66}, {name:"Guyana", rat:66}, {name:"Suriname", rat:70}, {name:"Belize", rat:62}, {name:"Nicaragua", rat:67}
+    ];
+
+    const teamThemes = {
+        "Man City": "#46a7e0", "Arsenal": "#ef0107", "Liverpool": "#c8102e", "Chelsea": "#034694", "Man United": "#da020e", "Tottenham": "#132257",
+        "Real Madrid": "#d1d1d1", "Barcelona": "#004d98", "Atletico Madrid": "#cb3524", "PSG": "#004170", "Marseille": "#2bb1ff"
+    };
+
+    const database = {
+        "Premier League": [
+            {name:"Man City", baseRat:88}, {name:"Arsenal", baseRat:86}, {name:"Liverpool", baseRat:86}, {name:"Chelsea", baseRat:83},
+            {name:"Man United", baseRat:82}, {name:"Tottenham", baseRat:82}, {name:"Newcastle", baseRat:81}, {name:"Aston Villa", baseRat:81},
+            {name:"Brighton", baseRat:80}, {name:"West Ham", baseRat:79}, {name:"Crystal Palace", baseRat:78}, {name:"Fulham", baseRat:78},
+            {name:"Bournemouth", baseRat:77}, {name:"Everton", baseRat:77}, {name:"Brentford", baseRat:77}, {name:"Nottingham Forest", baseRat:76},
+            {name:"Wolverhampton", baseRat:76}, {name:"Ipswich Town", baseRat:74}, {name:"Leicester City", baseRat:75}, {name:"Southampton", baseRat:74}
+        ],
+        "La Liga": [
+            {name:"Real Madrid", baseRat:89}, {name:"Barcelona", baseRat:87}, {name:"Atletico Madrid", baseRat:84}, {name:"Real Sociedad", baseRat:81},
+            {name:"Villarreal", baseRat:81}, {name:"Sevilla", baseRat:80}, {name:"Real Betis", baseRat:80}, {name:"Athletic Bilbao", baseRat:81},
+            {name:"Girona", baseRat:80}, {name:"Valencia", baseRat:78}, {name:"Osasuna", baseRat:77}, {name:"Getafe", baseRat:76},
+            {name:"Celta Vigo", baseRat:77}, {name:"Rayo Vallecano", baseRat:76}, {name:"Alaves", baseRat:76}, {name:"Las Palmas", baseRat:75},
+            {name:"Mallorca", baseRat:76}, {name:"Leganes", baseRat:74}, {name:"Valladolid", baseRat:74}, {name:"Espanyol", baseRat:75}
+        ],
+        "Ligue 1": [
+            {name:"PSG", baseRat:85}, {name:"Marseille", baseRat:81}, {name:"Monaco", baseRat:81}, {name:"Lyon", baseRat:80}, {name:"Lille", baseRat:80}, {name:"Lens", baseRat:78}, {name:"Rennes", baseRat:78}, {name:"Nice", baseRat:79}
+        ],
+        "MLS": [
+            {name:"Inter Miami", baseRat:78}, {name:"LA Galaxy", baseRat:75}, {name:"LAFC", baseRat:76}, {name:"Columbus Crew", baseRat:75}, {name:"Seattle Sounders", baseRat:73}, {name:"FC Cincinnati", baseRat:74}, {name:"Atlanta United", baseRat:72}, {name:"NY Red Bulls", baseRat:73}
+        ],
+        "Serie A Brasil": [
+            {name:"Flamengo", baseRat:79}, {name:"Palmeiras", baseRat:79}, {name:"Botafogo", baseRat:78}, {name:"Atletico Mineiro", baseRat:77}, {name:"Sao Paulo", baseRat:77}, {name:"Fluminense", baseRat:76}, {name:"Gremio", baseRat:76}, {name:"Internacional", baseRat:76}
+        ]
+    };
+
+    const approxFirst = ["E.", "L.", "K.", "K.", "J.", "B.", "V.", "M.", "C.", "A.", "R.", "T.", "G.", "N.", "O.", "H."];
+    const approxLast = ["Halland", "Mesi", "Mbafe", "De Bruin", "Beligham", "Saka", "Junor", "Sallah", "Palmar", "Grizman", "Rodrigo", "Silve", "Garca", "Neymar", "Odegard", "Kane", "Musiala", "Wirtz", "Leao", "Dias", "Rice", "Rodri", "Valverde", "Pedri", "Gavi", "Saliba", "Van Dijk", "Alisson", "Courtois", "Donnaruma"];
+    const completePositions = ["ST", "CF", "LW", "RW", "CAM", "CM", "CDM", "LM", "RM", "CB", "LB", "RB", "GK"];
+    const calendarMonths = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+
+    let pName = "", pPos = "", club = "", nation = "", currentLeague = "Premier League";
+    let skillPoints = 0, currentStep = 0, schedule = [], currentYear = 2025, matchesPlayed = 0;
+    let rostersMemory = {}; 
+    let matchInProgress = false;
+    
+    let attributes = {
+        PAC:{name:"Pace",val:65}, SHO:{name:"Shooting",val:65}, PAS:{name:"Passing",val:65},
+        DRI:{name:"Dribbling",val:65}, DEF:{name:"Defending",val:65}, PHY:{name:"Physicality",val:65}
+    };
+    let clubStandings = [];
+
+    window.onload = function() {
+        const nSel = document.getElementById('setup-nation');
+        nationalDatabase.forEach(n => nSel.add(new Option(n.name, n.name)));
+        populateClubs();
+    };
+
+    function populateClubs() {
+        const l = document.getElementById('setup-league').value;
+        const cSel = document.getElementById('setup-club');
+        cSel.innerHTML = "";
+        database[l].forEach(t => cSel.add(new Option(t.name, t.name)));
+    }
+
+    function generateTeamRoster(teamName, tierRating) {
+        if (rostersMemory[teamName]) return rostersMemory[teamName];
+        let roster = [];
+        let locallyUsedLastNames = new Set();
+        
+        for (let i = 0; i < 11; i++) {
+            let fn = approxFirst[Math.floor(Math.random() * approxFirst.length)];
+            let ln = "";
+            let attempts = 0;
+            do {
+                ln = approxLast[Math.floor(Math.random() * approxLast.length)];
+                attempts++;
+            } while (locallyUsedLastNames.has(ln) && attempts < 30);
+            
+            locallyUsedLastNames.add(ln);
+            let pos = completePositions[i % completePositions.length];
+            let ovr = Math.min(95, Math.max(50, Math.floor(tierRating + (Math.random() * 8 - 4))));
+            roster.push({ name: `${fn} ${ln}`, pos: pos, ovr: ovr, app: 0, goals: 0, assists: 0 });
+        }
+        rostersMemory[teamName] = roster;
+        return roster;
+    }
+
+    function buildSchedules() {
+        schedule = [];
+        for(let i=1; i<=14; i++) {
+            let monthIdx = Math.floor((i-1) / 2);
+            let currentMonth = calendarMonths[monthIdx];
+            let currentDay = 5 + (i * 2);
+            schedule.push({ id: i, type: "Club", name: `League Fixture Round ${i}`, date: `${currentMonth} ${currentDay}, ${currentYear + (monthIdx >= 3 ? 1 : 0)}` });
+        }
+
+        let endYear = currentYear + 1;
+        let tournamentName = "International Friendly Tournament";
+        
+        if ((endYear - 2026) % 4 === 0) {
+            tournamentName = "🏆 FIFA World Cup Finals";
+        } else if ((endYear - 2026) % 2 === 0) {
+            tournamentName = Math.random() > 0.5 ? "🏆 UEFA Euros Championship" : "🏆 Copa América Tournament";
+        }
+
+        schedule.push({ id: 15, type: "International", name: `${tournamentName} - Group Stage`, date: `Jun 14, ${endYear}` });
+        schedule.push({ id: 16, type: "International", name: `${tournamentName} - Quarter Final`, date: `Jun 28, ${endYear}` });
+        schedule.push({ id: 17, type: "International", name: `${tournamentName} - Semi Final`, date: `Jul 05, ${endYear}` });
+        schedule.push({ id: 18, type: "International", name: `${tournamentName} - Grand Final 🏆`, date: `Jul 12, ${endYear}` });
+    }
+
+    function startGame() {
+        pName = document.getElementById('setup-name').value;
+        pPos = document.getElementById('setup-pos').value;
+        currentLeague = document.getElementById('setup-league').value;
+        club = document.getElementById('setup-club').value;
+        nation = document.getElementById('setup-nation').value;
+        
+        if(teamThemes[club]) document.documentElement.style.setProperty('--team-color', teamThemes[club]);
+
+        clubStandings = [];
+        database[currentLeague].forEach(t => {
+            clubStandings.push({ name: t.name, played: 0, wins: 0, draws: 0, losses: 0, pts: 0 });
+            generateTeamRoster(t.name, t.baseRat);
+        });
+
+        let userNatObj = nationalDatabase.find(n => n.name === nation) || {rat:75};
+        generateTeamRoster(nation, userNatObj.rat);
+        nationalDatabase.forEach(nat => generateTeamRoster(nat.name, nat.rat));
+
+        buildSchedules();
+        populateRosterDropdowns();
+        generateInitialNews();
+        document.getElementById('screen-setup').style.display = 'none';
+        document.getElementById('game-hub').style.display = 'block';
+        buildSkillTreeUI();
+        updateUI();
+    }
+
+    function populateRosterDropdowns() {
+        const sel = document.getElementById('roster-select-team');
+        sel.innerHTML = "";
+        sel.add(new Option(`-- Your Club: ${club} --`, club));
+        sel.add(new Option(`-- National: ${nation} --`, nation));
+        database[currentLeague].forEach(t => { if(t.name !== club) sel.add(new Option(t.name, t.name)); });
+        nationalDatabase.forEach(n => { if(n.name !== nation) sel.add(new Option(n.name, n.name)); });
+    }
+
+    function renderRosterView() {
+        const teamSelected = document.getElementById('roster-select-team').value;
+        const body = document.getElementById('roster-body');
+        body.innerHTML = "";
+        let playersList = rostersMemory[teamSelected] ? JSON.parse(JSON.stringify(rostersMemory[teamSelected])) : [];
+        if(teamSelected === club) {
+            playersList.unshift({ name: pName + " (You)", pos: pPos, ovr: getCalculatedOVR(), app: matchesPlayed, goals: "-", assists: "-" });
+        }
+        playersList.forEach(p => {
+            let row = document.createElement('tr');
+            row.innerHTML = `<td>${p.name}</td><td>${p.pos}</td><td><strong>${p.ovr}</strong></td><td>${p.app}</td><td>${p.goals}</td><td>${p.assists}</td>`;
+            body.appendChild(row);
+        });
+    }
+
+    function buildSkillTreeUI() {
+        const grid = document.getElementById('skills-grid');
+        grid.innerHTML = "";
+        for (let key in attributes) {
+            let item = attributes[key];
+            let card = document.createElement('div');
+            card.className = "list-card";
+            card.innerHTML = `
+                <strong>${item.name}: ${item.val}</strong>
+                <button class="btn" style="padding:4px; margin-top:5px; font-size:11px;" onclick="upgradeStat('${key}')">Upgrade (-1 SP)</button>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    function upgradeStat(key) {
+        if (skillPoints < 1) { alert("Need Skill Points!"); return; }
+        skillPoints--; attributes[key].val += 2;
+        buildSkillTreeUI(); updateUI();
+    }
+
+    function getCalculatedOVR() {
+        let sum = 0; for(let k in attributes) { sum += attributes[k].val; }
+        return Math.round(sum / 6);
+    }
+
+    function updateUI() {
+        document.getElementById('hud-name').innerText = pName + ` (${pPos})`;
+        document.getElementById('hud-club').innerText = club;
+        document.getElementById('hud-nation').innerText = nation;
+        document.getElementById('hud-sp').innerText = skillPoints + " SP";
+        document.getElementById('hud-ovr').innerText = getCalculatedOVR();
+        
+        let currentMatch = schedule[currentStep] || { name: "Season Complete", date: "End" };
+        document.getElementById('hud-date').innerText = currentMatch.date;
+        document.getElementById('match-type-title').innerText = currentMatch.name;
+
+        clubStandings.sort((a,b) => b.pts - a.pts);
+        const tbody = document.getElementById('standings-body');
+        tbody.innerHTML = "";
+        clubStandings.forEach((t, i) => {
+            let row = document.createElement('tr');
+            if(t.name === club) row.className = "highlight-row";
+            row.innerHTML = `<td>${i+1}</td><td>${t.name}</td><td>${t.played}</td><td>${t.wins}</td><td>${t.draws}</td><td>${t.losses}</td><td><strong>${t.pts}</strong></td>`;
+            tbody.appendChild(row);
+        });
+        renderRosterView();
+    }
+
+    function showTab(tabName) {
+        document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+        document.getElementById('view-' + tabName).style.display = 'block';
+        document.getElementById('tab-' + tabName).classList.add('active-tab');
+    }
+
+    function generateInitialNews() {
+        const container = document.getElementById('news-container');
+        container.innerHTML = `
+            <div class="news-item"><b>📰 CAMPAIGN PREVIEW:</b> The 2025/26 cycle officially starts here! All roads lead to the summer tournaments.</div>
+            <div class="news-item"><b>✍️ TRANSFER ARRIVAL:</b> ${pName} officially finishes contract processing and joins up with ${club}!</div>
+        `;
+    }
+
+    function triggerLiveTransferNews(matchType, matchName) {
+        const container = document.getElementById('news-container');
+        if (matchType === "International") {
+            let headlines = [
+                `<b>🌍 TOURNAMENT FEVER:</b> Media profiles praise ${nation}'s latest appearance lineup details inside ${matchName}!`,
+                `<b>💥 MATCH ANALYSIS:</b> Tacticians weigh options for upcoming structural rounds inside the tournament bracket.`,
+                `<b>⭐ SCOUTING RUNS:</b> European transfer groups setup network outposts to view standout roster additions.`
+            ];
+            let block = document.createElement('div');
+            block.className = "news-item";
+            block.innerHTML = headlines[Math.floor(Math.random() * headlines.length)];
+            container.insertBefore(block, container.firstChild);
+            return;
+        }
+
+        let teams = database[currentLeague];
+        let randomTeam1 = teams[Math.floor(Math.random() * teams.length)].name;
+        let randomTeam2 = teams[Math.floor(Math.random() * teams.length)].name;
+        while(randomTeam1 === randomTeam2) {
+            randomTeam2 = teams[Math.floor(Math.random() * teams.length)].name;
+        }
+
+        let rosterSource = rostersMemory[randomTeam1];
+        if(!rosterSource || rosterSource.length === 0) return;
+        let playerObj = rosterSource[Math.floor(Math.random() * rosterSource.length)];
+
+        let newsTypes = [
+            `<b>🚨 TRANSFER RUMOR:</b> ${playerObj.name} has agreed terms on a massive market move from ${randomTeam1} to rival outfit ${randomTeam2}!`,
+            `<b>🤕 INJURY UPDATE:</b> Star talent ${playerObj.name} from ${randomTeam1} has suffered a severe strain and is sidelined.`,
+            `<b>🔥 PERFORMANCE WATCH:</b> Elite division analysts tracking ${playerObj.name} following recent game performances.`
+        ];
+
+        let newBlock = document.createElement('div');
+        newBlock.className = "news-item";
+        newBlock.innerHTML = newsTypes[Math.floor(Math.random() * newsTypes.length)];
+        container.insertBefore(newBlock, container.firstChild);
+    }
+
+    function spawnVisualPitchDots() {
+        const pitch = document.getElementById('pitch');
+        document.querySelectorAll('.dot').forEach(d => d.remove());
+        for(let i=0; i<8; i++) {
+            let d1 = document.createElement('div'); d1.className = "dot"; d1.style.background = teamThemes[club] || "#00ff88";
+            d1.style.left = Math.floor(Math.random()*40 + 5) + "%"; d1.style.top = Math.floor(Math.random()*80 + 10) + "%";
+            let d2 = document.createElement('div'); d2.className = "dot"; d2.style.background = "#ff3333";
+            d2.style.left = Math.floor(Math.random()*40 + 55) + "%"; d2.style.top = Math.floor(Math.random()*80 + 10) + "%";
+            pitch.appendChild(d1); pitch.appendChild(d2);
+        }
+    }
+
+    function simulateRestOfLeague() {
+        let leagueTeams = database[currentLeague];
+        let processed = new Set();
+        processed.add(club);
+
+        for (let i = 0; i < leagueTeams.length; i++) {
+            let t1Name = leagueTeams[i].name;
+            if (processed.has(t1Name)) continue;
+
+            let t2Name = "";
+            for (let j = i + 1; j < leagueTeams.length; j++) {
+                if (!processed.has(leagueTeams[j].name)) {
+                    t2Name = leagueTeams[j].name;
+                    break;
+                }
+            }
+            if (!t2Name) break;
+
+            processed.add(t1Name);
+            processed.add(t2Name);
+
+            let t1Score = Math.floor(Math.random() * 4);
+            let t2Score = Math.floor(Math.random() * 4);
+
+            let pT1 = clubStandings.find(t => t.name === t1Name);
+            let pT2 = clubStandings.find(t => t.name === t2Name);
+
+            if (pT1 && pT2) {
+                pT1.played++; pT
